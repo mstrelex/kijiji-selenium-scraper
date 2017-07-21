@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Custom
+kijiji-scraper-results.xlsx
+kijiji-scraper.log
+chromedriver
+chromedriver.exe
