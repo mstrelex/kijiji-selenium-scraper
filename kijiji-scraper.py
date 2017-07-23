@@ -2,7 +2,7 @@
 
 __author__ = 	"Marat Strelets"
 __copyright__ = "Copyright 2017"
-__version__ = 	"0.2"
+__version__ = 	"0.2.1"
 __email__ = 	"marat.strelets@gmail.com"
 __status__ = 	"Beta"
 
@@ -283,8 +283,11 @@ def get_page_ads(page_url, page_index):
 		driver.get(page_url)
 
 		# Get Header
-		header = driver.find_element_by_xpath(RESULTS_HEADER).text.strip()
-		log("INFO  " + header)
+		try:
+			header = driver.find_element_by_xpath(RESULTS_HEADER).text.strip()
+			log("INFO  " + header)
+		except:
+			log("WARN  Failed to extract header")
 
 		# Get Ads URLs
 		for ad in driver.find_elements_by_xpath(AD_IN_LIST):
@@ -395,10 +398,13 @@ def parse_ad(url):
 			ad_info["Visits"] = new_value
 			log("INFO  + Vists = '" + original_value + "' >> Visits = '" + new_value + "'")
 
-	try:
-		save_ad_info(ad_info)
-	except Exception as e:
-		log("ERROR Failed to save AD info to Excel " + str(e))
+	if args.no_zero_vists and ("Visits" not in ad_info or ad_info["Visits"] == "0"):
+		log("INFO  ! Zero or no vists - saving skipped")
+	else:
+		try:
+			save_ad_info(ad_info)
+		except Exception as e:
+			log("ERROR Failed to save AD info to Excel " + str(e))
 
 def save_ad_info(ad_info):
 	global excel_row_index, ws, columns
@@ -492,6 +498,7 @@ def setup_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("source", type=str, help="Source URL to scrape")
 	parser.add_argument("-p", "--pages", type=int, default=1, help="Total pages to scrape", metavar="")
+	parser.add_argument("-0", "--no-zero-visits", dest='no_zero_vists', action='store_true', help="Ignore ads with 0 or no vists")
 	parser.add_argument("-t", "--timeout", type=int, default=60, help="Max timeout (seconds) for Chrome Driver operation", metavar="")
 	parser.add_argument("-o", "--no-optimize", dest='no_optimize', action='store_true', help="Disable optimize (load images)")
 	parser.add_argument("-e", "--headless", dest='headless', action='store_true', help="Headless mode (no UI)")
