@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.2] - 2017-07-26
+### Added
+- Optional argument to select driver
+
 ## [0.2.1] - 2017-07-22
 ### Added
 - Optional argument to ignore ads with zero or no visits

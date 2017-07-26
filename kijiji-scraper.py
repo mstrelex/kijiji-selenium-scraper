@@ -2,7 +2,7 @@
 
 __author__ = 	"Marat Strelets"
 __copyright__ = "Copyright 2017"
-__version__ = 	"0.2.1"
+__version__ = 	"0.2.2"
 __email__ = 	"marat.strelets@gmail.com"
 __status__ = 	"Beta"
 
@@ -184,11 +184,9 @@ def run(url):
 
 	print("Bye.")
 
-def init_driver():
+def init_chrome_driver():
 	global driver
 
-	log("INFO  Initializing driver...")
-	
 	driver_executable = None
 	if sys.platform == 'win32':
 		driver_executable = "chromedriver.exe"
@@ -225,8 +223,26 @@ def init_driver():
 					chrome_options.add_argument("--enable-automation")
 
 				driver = selenium.webdriver.Chrome(DIR_PATH + "/" + driver_executable, chrome_options=chrome_options)
+				return driver
 	except Exception as e:
 			log("ERROR Failed to initialize driver: " + str(e).split(os.linesep, 1)[0])
+			return null
+
+def init_phantomjs_driver():
+	if sys.platform == 'win32':
+		return webdriver.PhantomJS(executable_path=DIR_PATH + '/phantomjs/bin/phantomjs.exe')
+	else:
+		return webdriver.PhantomJS(executable_path=DIR_PATH + '/phantomjs/bin/phantomjs')
+
+def init_driver():
+	global driver
+
+	log("INFO  Initializing driver...")
+	
+	if args.driver.lower() ==  "Chrome".lower():
+		driver = init_chrome_driver()
+	elif args.driver.lower() ==  "PhantomJS".lower():
+		driver = init_phantomjs_driver()
 
 	if driver is not None:
 		driver.set_page_load_timeout(args.timeout)
@@ -460,15 +476,33 @@ def send_mail( send_from, send_to, subject, text, files=[], server="localhost", 
     smtp.quit()
 
 def verify_driver():
-	message = "ERROR:  ChromeDriver is missing, download from https://sites.google.com/a/chromium.org/chromedriver/downloads"
-	if sys.platform == 'win32':
-		if not os.path.exists(DIR_PATH + '/chromedriver.exe'):
-			log(message)
-			sys.exit()
+
+	if args.driver.lower() ==  "Chrome".lower():
+		message = "ERROR:  ChromeDriver is missing, download from https://sites.google.com/a/chromium.org/chromedriver/downloads"
+		if sys.platform == 'win32':
+			if not os.path.exists(DIR_PATH + '/chromedriver.exe'):
+				log(message)
+				sys.exit()
+		else:
+			if not os.path.exists(DIR_PATH + '/chromedriver'):
+				log(message)
+				sys.exit()
+
+	elif args.driver.lower() ==  "PhantomJS".lower():
+		message = "ERROR:  PhantomDriver is missing, download from http://phantomjs.org/download.html"
+		if sys.platform == 'win32':
+			if not os.path.exists(DIR_PATH + '/phantomjs/bin/phantomjs.exe'):
+				log(message)
+				sys.exit()
+		else:
+			if not os.path.exists(DIR_PATH + '/phantomjs/bin/phantomjs'):
+				log(message)
+				sys.exit()
 	else:
-		if not os.path.exists(DIR_PATH + '/chromedriver'):
-			log(message)
-			sys.exit()
+		log("ERROR Driver '" + args.driver + "' is not supported")
+		sys.exit()
+
+	log("INFO  Using Driver " + args.driver)
 
 def can_send_email():
 	if args.recipients is None or len(args.recipients) == 0:
@@ -498,6 +532,7 @@ def setup_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("source", type=str, help="Source URL to scrape")
 	parser.add_argument("-p", "--pages", type=int, default=1, help="Total pages to scrape", metavar="")
+	parser.add_argument("-d", "--driver", type=str, default="chrome", help="Driver to use (default: Chrome)", metavar="")
 	parser.add_argument("-0", "--no-zero-visits", dest='no_zero_vists', action='store_true', help="Ignore ads with 0 or no vists")
 	parser.add_argument("-t", "--timeout", type=int, default=60, help="Max timeout (seconds) for Chrome Driver operation", metavar="")
 	parser.add_argument("-o", "--no-optimize", dest='no_optimize', action='store_true', help="Disable optimize (load images)")
