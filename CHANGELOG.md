@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.3] - 2017-07-30
+### Added
+- Added support for multi-execution
+
 ## [0.2.2] - 2017-07-26
 ### Added
 - Optional argument to select driver

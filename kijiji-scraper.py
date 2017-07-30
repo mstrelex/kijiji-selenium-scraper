@@ -2,7 +2,7 @@
 
 __author__ = 	"Marat Strelets"
 __copyright__ = "Copyright 2017"
-__version__ = 	"0.2.2"
+__version__ = 	"0.3"
 __email__ = 	"marat.strelets@gmail.com"
 __status__ = 	"Beta"
 
@@ -27,13 +27,15 @@ import logging
 from selenium.webdriver.remote.remote_connection import LOGGER
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import uuid
 
 # Environment
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # CONSTS
-RESULTS_FILE = "kijiji-scraper-results.xlsx"
-LOG_FILE = "kijiji-scraper.log"
+EXECUTION_GUID = str(uuid.uuid4())
+RESULTS_FILE = EXECUTION_GUID + ".xlsx"
+LOG_FILE = EXECUTION_GUID + ".log"
 
 # Locators
 AD_IN_LIST = '//*[@class = "title"]/a'
