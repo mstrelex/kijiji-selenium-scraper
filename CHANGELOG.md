@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.3.1] - 2017-07-30
+### Fixed
+- Driver init via Selenium server return null and break flow
+- Maximizing window in headless mode causes a failure
+
 ## [0.3] - 2017-07-30
 ### Added
 - Added support for multi-execution

@@ -2,7 +2,7 @@
 
 __author__ = 	"Marat Strelets"
 __copyright__ = "Copyright 2017"
-__version__ = 	"0.3"
+__version__ = 	"0.3.1"
 __email__ = 	"marat.strelets@gmail.com"
 __status__ = 	"Beta"
 
@@ -211,6 +211,7 @@ def init_chrome_driver():
 				driver = webdriver.Remote(
 					command_executor=args.server, 
 					desired_capabilities=chrome_options.to_capabilities())
+			return driver
 
 		else: # Standalone Driver		
 			if args.no_optimize is True:
@@ -248,7 +249,9 @@ def init_driver():
 
 	if driver is not None:
 		driver.set_page_load_timeout(args.timeout)
-		driver.maximize_window()
+
+		if args.headless == False:
+			driver.maximize_window()
 
 	return driver
 
